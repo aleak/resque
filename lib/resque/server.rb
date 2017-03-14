@@ -40,10 +40,23 @@ module Resque
       def url_path(*path_parts)
         [ url_prefix, path_prefix, path_parts ].join("/").squeeze('/')
       end
+
+      def current_namespace()
+        Resque.redis.namespace
+      end
+
       alias_method :u, :url_path
 
+      def namespaces()
+        if ENV['RESQUE_NAMESPACES']
+          ENV['RESQUE_NAMESPACES'].split(",")
+        else
+          [ Resque.redis.namespace ]
+        end
+      end
+
       def redirect_url_path(*path_parts)
-        [ path_prefix, path_parts ].join("/").squeeze('/')
+        [ path_prefix, path_parts ].join("/").squeeze('/') + "?namespace=" + current_namespace
       end
 
       def path_prefix
@@ -57,7 +70,7 @@ module Resque
       def tab(name)
         dname = name.to_s.downcase
         path = url_path(dname)
-        "<li #{class_if_current(path)}><a href='#{path}'>#{name}</a></li>"
+        "<li #{class_if_current(path)}><a href='#{path + "?namespace=" + current_namespace}'>#{name}</a></li>"
       end
 
       def tabs
@@ -173,6 +186,12 @@ module Resque
 
     %w( overview queues working workers key ).each do |page|
       get "/#{page}/?" do
+        show page
+      end
+
+      post "/#{page}/?" do
+        puts "posting ninja #{params[:namespace]}"
+        Resque.redis.namespace = params[:namespace] if params[:namespace]
         show page
       end
 
