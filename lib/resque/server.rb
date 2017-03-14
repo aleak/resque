@@ -45,6 +45,10 @@ module Resque
         Resque.redis.namespace
       end
 
+      def switch_namespace(name)
+        Resque.redis.namespace = name if name
+      end
+
       alias_method :u, :url_path
 
       def namespaces()
@@ -169,6 +173,10 @@ module Resque
       show(page.to_sym, false).gsub(/\s{1,}/, ' ')
     end
 
+    before do
+      switch_namespace(params[:namespace])
+    end
+
     # to make things easier on ourselves
     get "/?" do
       redirect redirect_url_path(:overview)
@@ -189,13 +197,13 @@ module Resque
         show page
       end
 
-      post "/#{page}/?" do
-        puts "posting ninja #{params[:namespace]}"
-        Resque.redis.namespace = params[:namespace] if params[:namespace]
+      get "/#{page}/:id/?" do
         show page
       end
+    end
 
-      get "/#{page}/:id/?" do
+    %w( overview queues working workers key failed stats ).each do |page|
+      post "/#{page}/?" do
         show page
       end
     end

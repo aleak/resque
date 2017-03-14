@@ -15,7 +15,7 @@
       document.getElementById("namespaces").classList.toggle("show");
     }
 
-    function change_namespace(selected_namespace) {
+    function switch_namespace(selected_namespace) {
       form = document.getElementById("namespace");
       form.action = "<%= current_section %>" + "?namespace=" + selected_namespace;
       form.submit();
@@ -37,8 +37,7 @@
     }
   </script>
   <div class="header">
-    <form id="namespace" method="POST" %>">
-      <!-- <input type="submit" name="" value="Clear <%= params[:queue] ? "'#{params[:queue]}'" : 'Failed' %> Jobs" onclick='return confirm("Are you absolutely sure? This cannot be undone.");' /> -->
+    <form id="namespace" method="POST" ">
     </form>
     <ul class='nav'>
       <% tabs.each do |tab_name| %>
@@ -50,7 +49,7 @@
         <button onclick="display_namespaces()" class="dropbtn"><%= Resque.redis.namespace %></button>
         <div id="namespaces" class="dropdown-content">
           <% namespaces.each do |namespace| %>
-            <a href="#" onclick="change_namespace('<%= namespace %>')"><%= namespace %></a>
+            <a href="#" onclick="switch_namespace('<%= namespace %>')"><%= namespace %></a>
           <% end %>
         </div>
       </div>

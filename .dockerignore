@@ -1,0 +1,13 @@
+# complete directories
+.bundle
+.git
+examples
+test
+
+# keep directory - clear contents
+log/*
+
+# individual files
+.dockerignore
+Dockerfile
+build-container.sh
