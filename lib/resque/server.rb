@@ -151,7 +151,7 @@ module Resque
         if @polling
           text = "Last Updated: #{Time.now.strftime("%H:%M:%S")}"
         else
-          text = "<a href='#{u(request.path_info)}.poll' rel='poll'>Live Poll</a>"
+          text = "<a href='#{u(request.path_info)}.poll?namespace=#{current_namespace}' rel='poll'>Live Poll</a>"
         end
         "<p class='poll'>#{text}</p>"
       end
@@ -287,6 +287,11 @@ module Resque
 
     get "/stats/keys/:key/?" do
       show :stats
+    end
+
+    get "/namespaces.txt" do
+      content_type 'text/html'
+      namespaces.collect{|ns| "#{ns}=#{ns.split(":").last}"} .join "\n"
     end
 
     get "/stats.txt/?" do
